@@ -1,6 +1,6 @@
 // /app/api/companysummary/route.ts 
 import { NextRequest, NextResponse } from 'next/server';
-import { anthropic } from "@ai-sdk/anthropic";
+import { createOpenRouterClient, getOpenRouterModel } from '../../../lib/openrouter';
 import { generateObject } from 'ai';
 import { z } from 'zod';
 
@@ -17,6 +17,9 @@ export async function POST(req: NextRequest) {
     const subpagesText = JSON.stringify(subpages, null, 2);
     const mainpageText = JSON.stringify(mainpage, null, 2);
 
+    // Create OpenRouter client
+    const openai = createOpenRouterClient();
+
     // Define the schema as an object with a 'sections' array
     const summarySchema = z.object({
       sections: z.array(z.object({
@@ -26,7 +29,7 @@ export async function POST(req: NextRequest) {
     });
 
     const { object } = await generateObject({
-      model: anthropic('claude-3-5-sonnet-20241022'),
+      model: openai(getOpenRouterModel()),
       schema: summarySchema,
       output: 'object',
       system: "All the output content should be in simple english. Don't use any difficult words. Keep sentences short and simple.  Use unique emojis for each heading.",

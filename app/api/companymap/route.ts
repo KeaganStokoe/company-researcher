@@ -1,6 +1,6 @@
 // /app/api/companymap/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { anthropic } from "@ai-sdk/anthropic";
+import { createOpenRouterClient, getOpenRouterModel } from '../../../lib/openrouter';
 import { generateObject } from 'ai';
 import { z } from 'zod';
 
@@ -15,6 +15,9 @@ export async function POST(req: NextRequest) {
     }
 
     const mainpageText = JSON.stringify(mainpage, null, 2);
+
+    // Create OpenRouter client
+    const openai = createOpenRouterClient();
 
     // Define a recursive schema for mind map nodes
     const mindMapNodeSchema = z.object({
@@ -35,7 +38,7 @@ export async function POST(req: NextRequest) {
     });
 
     const { object } = await generateObject({
-      model: anthropic('claude-3-5-sonnet-20241022'),
+      model: openai(getOpenRouterModel()),
       schema: mindMapSchema,
       output: 'object',
       system: "Create clear, concise mind maps that help users quickly understand companies. Use simple English and focus on the most important aspects.",

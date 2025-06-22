@@ -37,3 +37,7 @@ next-env.d.ts
 
 cursor/
 .cursor/
+
+env.example
+.env
+
